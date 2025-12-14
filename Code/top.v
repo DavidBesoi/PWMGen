@@ -3,15 +3,12 @@
     FOR THE TESTBENCH PROVIDED TO WORK PROPERLY.
 */
 module top(
-    // peripheral clock signals
     input clk,
     input rst_n,
-    // SPI master facing signals
     input sclk,
     input cs_n,
     input miso,
     output mosi,
-    // peripheral signals
     output pwm_out
 );
 
@@ -23,7 +20,7 @@ wire cs_n;
 wire miso;
 wire mosi;
 
-wire byte_sync;
+wire byte_sync; 
 wire[7:0] data_in;
 wire[7:0] data_out;
 wire read;
@@ -49,14 +46,17 @@ spi_bridge i_spi_bridge (
     .rst_n(rst_n),
     .sclk(sclk),
     .cs_n(cs_n),
-    .miso(miso),
-    .mosi(mosi)
+    .miso(mosi), // Erau legate pe invers inainte
+    .mosi(miso),
+    .byte_sync(byte_sync), // Nu erau inainte dar apareau pe diagrama
+    .data_in(data_in),
+    .data_out(data_out)
 );
 
 instr_dcd i_instr_dcd (
     .clk(clk),
     .rst_n(rst_n),
-    .byte_sync(),
+    .byte_sync(byte_sync), // Nu era legat inainte, era .byte_sync()
     .data_in(data_in),
     .data_out(data_out),
     .read(read),

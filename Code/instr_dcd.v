@@ -27,7 +27,7 @@ module instr_dcd (
     reg write;
     reg [5:0] addr;
     reg [7:0] data_write;
-    
+
     // data_out este valoarea ultimei citiri
     assign data_out = data_out_reg;
 
@@ -43,13 +43,12 @@ module instr_dcd (
             addr         <= 6'h00;
             data_write   <= 8'h00;
         end else begin
-            
+
             // Pulsurile de read/write sunt active doar un ciclu
             read  <= 1'b0;
             write <= 1'b0;
 
             case (state_reg)
-                
                 //Idle: Asteptam instructiunea
                 S_IDLE: begin
                     if (byte_sync) begin
@@ -61,16 +60,13 @@ module instr_dcd (
                 //Setup: Asteptam octetul de date
                 S_SETUP: begin
                     if (byte_sync) begin
-                        // Calculam adresa finala: Base Addr [5:0] + High/Low bit [6]
-                        addr <= instr_reg[5:0] + instr_reg[6];
-                        
+                        addr <= instr_reg[5:0];
                         if (instr_reg[7]) begin
-                            write      <= 1'b1; 
-                            data_write <= data_in;   // Trimitem octetul de date catre regs
+                            write      <= 1'b1;
+                            data_write <= data_in; // Trimitem octetul de date catre regs
                         end else begin
                             read <= 1'b1;
                         end
-                        
                         state_reg <= S_IDLE; // Ne intoarcem la starea de idle
                     end
                 end
@@ -78,17 +74,11 @@ module instr_dcd (
                 default: begin
                     state_reg <= S_IDLE;
                 end
-                
             endcase
 
-            // --- Latch Read Data ---
-            // Daca 'read' a fost setat pe 1 in 'case'-ul de mai sus,
-            // 'regs' va pune datele pe 'data_read' in acest ciclu (combinational).
-            // Le salvam in 'data_out_reg' pentru a fi trimise la urmatoarea tranzactie SPI.
             if (read) begin
                 data_out_reg <= data_read;
             end
         end
     end
-
 endmodule

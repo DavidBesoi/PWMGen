@@ -1,0 +1,33 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/counter.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module counter
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/instr_dcd.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module instr_dcd
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'read' is not allowed [E:/PWMGen/Code/instr_dcd.v:26]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'write' is not allowed [E:/PWMGen/Code/instr_dcd.v:27]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'addr' is not allowed [E:/PWMGen/Code/instr_dcd.v:28]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'data_write' is not allowed [E:/PWMGen/Code/instr_dcd.v:29]
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/pwm_gen.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pwm_gen
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/regs.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module regs
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'period' is not allowed [E:/PWMGen/Code/regs.v:26]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'en' is not allowed [E:/PWMGen/Code/regs.v:27]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'count_reset' is not allowed [E:/PWMGen/Code/regs.v:28]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'upnotdown' is not allowed [E:/PWMGen/Code/regs.v:29]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'prescale' is not allowed [E:/PWMGen/Code/regs.v:30]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'pwm_en' is not allowed [E:/PWMGen/Code/regs.v:31]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'functions' is not allowed [E:/PWMGen/Code/regs.v:32]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'compare1' is not allowed [E:/PWMGen/Code/regs.v:33]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'compare2' is not allowed [E:/PWMGen/Code/regs.v:34]
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/spi_bridge.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module spi_bridge
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module top
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'clk' is not allowed [E:/PWMGen/Code/top.v:15]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'rst_n' is not allowed [E:/PWMGen/Code/top.v:16]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'sclk' is not allowed [E:/PWMGen/Code/top.v:18]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'cs_n' is not allowed [E:/PWMGen/Code/top.v:19]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'miso' is not allowed [E:/PWMGen/Code/top.v:20]
+WARNING: [VRFC 10-9336] redeclaration of ANSI port 'mosi' is not allowed [E:/PWMGen/Code/top.v:21]
+INFO: [VRFC 10-2263] Analyzing Verilog file "E:/PWMGen/Code/PWM/PWM.srcs/sim_1/new/testbench.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module tb_top_system

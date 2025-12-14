@@ -1,98 +1,79 @@
 module spi_bridge (
-    // peripheral clock signals
     input clk,
     input rst_n,
-    // SPI master facing signals
     input sclk,
     input cs_n,
     input mosi,
     output miso,
-    // internal facing 
     output byte_sync,
     output[7:0] data_in,
     input[7:0] data_out
 );
-    //Reg interne
-    reg [2:0] bit_count;      // Numarator de biti ca sa stim cand am primit un octet
-    reg [7:0] data_in_reg;    // Registru de deplasare pentru MOSI 
-    reg [7:0] data_out_latch; // Latch pentru datele de trimis
-    reg miso_reg;           // Iesirea MISO 
-    reg byte_sync_pulse;    // Puls de 1 ciclu clk
+    reg [2:0] bit_cnt;
+    reg [7:0] shift_in;
+    reg [7:0] shift_out;
+    reg byte_done_toggle;
+    reg [7:0] shift_buffer; 
 
-    // Sincronizare si detectia fronturilor
-    // Am facut asta ca sa nu apara un race condition intre spi si decoder
-    // Chiar daca sunt exact la fel sclk si clk am vrut sa fie si tot modulul pus pe clk
-    reg sclk_d1, sclk_d2;
-    reg cs_n_d1, cs_n_d2;
-    reg mosi_d1;
+    always @(posedge sclk or posedge cs_n or negedge rst_n) begin
+        if (!rst_n) begin
+            bit_cnt <= 3'b000;
+            byte_done_toggle <= 1'b0;
+            shift_in <= 8'h00;
+            shift_buffer <= 8'h00;
+        end else if (cs_n) begin
+            bit_cnt <= 3'b000;
+        end else begin
+            shift_in <= {shift_in[6:0], mosi};
+            bit_cnt <= bit_cnt + 1;
+            
+            if (bit_cnt == 3'b111) begin
+                byte_done_toggle <= ~byte_done_toggle;
+                shift_buffer <= {shift_in[6:0], mosi};
+            end
+        end
+    end
 
-    wire sclk_rising_edge  = (sclk_d1 == 1'b1) && (sclk_d2 == 1'b0);
-    wire sclk_falling_edge = (sclk_d1 == 1'b0) && (sclk_d2 == 1'b1);
-    wire cs_n_falling_edge = (cs_n_d1 == 1'b0) && (cs_n_d2 == 1'b1);
-    wire cs_n_active        = (cs_n_d2 == 1'b0); // cs_n este activ
+    always @(negedge sclk or negedge cs_n or negedge rst_n) begin
+        if (!rst_n) begin
+            shift_out <= 8'h00;
+        end else if (!cs_n) begin
+            if (bit_cnt == 3'b000) begin
+                shift_out <= data_out;
+            end else begin
+                shift_out <= {shift_out[6:0], 1'b0};
+            end
+        end
+    end
+    
+    assign miso = (!cs_n) ? shift_out[7] : 1'bz;
 
-    //Legaturi iesiri
-    assign data_in = data_in_reg;
-    assign byte_sync = byte_sync_pulse;
-    assign miso = (cs_n_active) ? miso_reg : 1'bz; //Iesirea seriala MISO
+    reg sync_1, sync_2, sync_3;
+    reg byte_sync_pulse;
+    reg [7:0] data_in_latched;
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            bit_count <= 3'b000;
-            data_in_reg <= 8'h00;
-            data_out_latch <= 8'h00;
-            miso_reg <= 1'b0;
+            sync_1 <= 1'b0;
+            sync_2 <= 1'b0;
+            sync_3 <= 1'b0;
             byte_sync_pulse <= 1'b0;
-            sclk_d1 <= 1'b0; sclk_d2 <= 1'b0;
-            cs_n_d1 <= 1'b1; cs_n_d2 <= 1'b1;
-            mosi_d1 <= 1'b0;
+            data_in_latched <= 8'h00;
         end else begin
-            
-            // Sincronizam intrarile SPI cu ceasul clk
-            sclk_d1 <= sclk;
-            sclk_d2 <= sclk_d1;
-            cs_n_d1 <= cs_n;
-            cs_n_d2 <= cs_n_d1;
-            mosi_d1 <= mosi;
+            sync_1 <= byte_done_toggle;
+            sync_2 <= sync_1;
+            sync_3 <= sync_2; 
 
-            // Resetam byte_sync
-            byte_sync_pulse <= 1'b0;
-
-            // Inceputul tranzactiei SPI
-            if (cs_n_falling_edge) begin
-                bit_count <= 3'b000;
-                data_out_latch <= data_out;
-                miso_reg <= data_out[7]; //Pregatim primul bit MISO
-                data_in_reg <= 8'h00;
-            end
-            
-            // Logica SPI cat timp cs_n este activ
-            else if (cs_n_active) begin
-                
-                //CPHA=0: Punem MOSI pe frontul crescator sclk
-                if (sclk_rising_edge) begin
-                    data_in_reg <= {data_in_reg[6:0], mosi_d1}; //Primim bit
-                    bit_count <= bit_count + 1;
-                    
-                    if (bit_count == 3'b111) begin
-                        byte_sync_pulse <= 1'b1; //Generam byte_sync
-                    end
-                end
-                
-                //CPHA=0: Schimbam MISO pe frontul descrescator sclk
-                if (sclk_falling_edge) begin
-                     case(bit_count)
-                        3'b001: miso_reg <= data_out_latch[6]; 
-                        3'b010: miso_reg <= data_out_latch[5];
-                        3'b011: miso_reg <= data_out_latch[4];
-                        3'b100: miso_reg <= data_out_latch[3];
-                        3'b101: miso_reg <= data_out_latch[2];
-                        3'b110: miso_reg <= data_out_latch[1];
-                        3'b111: miso_reg <= data_out_latch[0];
-                        default: miso_reg <= 1'b0;
-                     endcase
-                end
+            if (sync_2 != sync_3) begin
+                byte_sync_pulse <= 1'b1;
+                data_in_latched <= shift_buffer; 
+            end else begin
+                byte_sync_pulse <= 1'b0;
             end
         end
-    end   
+    end
+
+    assign byte_sync = byte_sync_pulse;
+    assign data_in   = data_in_latched;
+
 endmodule

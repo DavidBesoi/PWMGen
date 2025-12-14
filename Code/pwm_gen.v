@@ -24,9 +24,10 @@ module pwm_gen (
     always @(*) begin
         // Valoarea default este 0 (inactiv)
         pwm_out_next = 1'b0;
-
         if (pwm_en) begin
-            if (mode_nealiniat) begin
+            if (compare1 == compare2) begin
+                pwm_out_next = 1'b0;
+            end else if (mode_nealiniat) begin
                 //Intre compare1 si compare2
                 if ((count_val >= compare1) && (count_val < compare2)) begin
                     pwm_out_next = 1'b1;
@@ -35,11 +36,11 @@ module pwm_gen (
                 if (mode_dreapta) begin
                     // Dreapta:de la compare1 la final
                     if (count_val >= compare1) begin
-                        pwm_out_next = 1'b1;
+                         pwm_out_next = 1'b1;
                     end
                 end else begin
                     // Stanga: de la 0 pana la compare1
-                    if (count_val < compare1) begin
+                    if ((count_val <= compare1) && (compare1 != 16'h0000)) begin 
                         pwm_out_next = 1'b1;
                     end
                 end
@@ -51,10 +52,9 @@ module pwm_gen (
     // Inregistram iesirea pe frontul de ceas
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pwm_out_reg <= 1'b0;
+             pwm_out_reg <= 1'b0;
         end else begin
             pwm_out_reg <= pwm_out_next;
         end
     end
-    
 endmodule

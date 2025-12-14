@@ -1,0 +1,12 @@
+0.7
+2020.2
+Apr 18 2022
+16:05:34
+E:/PWMGen/Code/PWM/PWM.sim/sim_1/behav/xsim/glbl.v,1649976174,verilog,,,,glbl,,,,,,,,
+E:/PWMGen/Code/PWM/PWM.srcs/sim_1/new/testbench.v,1765725215,verilog,,,,tb_top_system,,,,,,,,
+E:/PWMGen/Code/counter.v,1762774806,verilog,,E:/PWMGen/Code/instr_dcd.v,,counter,,,,,,,,
+E:/PWMGen/Code/instr_dcd.v,1765732906,verilog,,E:/PWMGen/Code/pwm_gen.v,,instr_dcd,,,,,,,,
+E:/PWMGen/Code/pwm_gen.v,1765733159,verilog,,E:/PWMGen/Code/regs.v,,pwm_gen,,,,,,,,
+E:/PWMGen/Code/regs.v,1765733357,verilog,,E:/PWMGen/Code/spi_bridge.v,,regs,,,,,,,,
+E:/PWMGen/Code/spi_bridge.v,1765733469,verilog,,E:/PWMGen/Code/top.v,,spi_bridge,,,,,,,,
+E:/PWMGen/Code/top.v,1765725628,verilog,,E:/PWMGen/Code/PWM/PWM.srcs/sim_1/new/testbench.v,,top,,,,,,,,
